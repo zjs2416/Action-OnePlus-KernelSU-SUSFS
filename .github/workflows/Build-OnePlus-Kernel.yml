@@ -118,7 +118,7 @@ jobs:
         run: |
           cd kernel_workspace
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
-          git clone https://github.com/TheWildJames/kernel_patches.git
+          git clone https://github.com/ychenxuan/Action-OnePlus-Kernel
           cd kernel_platform
           # Copy SUSFS patches
           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU
@@ -129,7 +129,7 @@ jobs:
           patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-          cp ../../kernel_patches/core_hook.c_fix.patch ./
+          cp ../../Action-OnePlus-Kernel/core_hook.c_fix.patch ./
           patch -p1 --fuzz=3 < ./core_hook.c_fix.patch
       - name: Apply SUSFS Patches KernelSU-Next
         if: ${{ (github.event.inputs.kernelsu_variant == 'Next') && github.event.inputs.SUSFS_ENABLED == 'true' }}
