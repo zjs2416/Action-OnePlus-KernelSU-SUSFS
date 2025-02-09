@@ -1,4 +1,4 @@
-name: Build OnePlus_Kernel ci
+name: Build OnePlus_Kernel
 on:
   workflow_dispatch:
     inputs:
@@ -23,11 +23,11 @@ on:
         required: true
         default: '6.1'
       KERNEL_NAME:
-        description: "内核名称"
+        description: "修改内核名称"
         required: true
         default: '-android14-11-o-g1132d864665d'
       kernelsu_variant:
-        description: "添加 KSU"
+        description: "选择 KSU"
         required: true
         type: choice
         options:
