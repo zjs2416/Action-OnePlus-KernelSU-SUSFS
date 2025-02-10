@@ -148,9 +148,7 @@ jobs:
           patch -p1 --forward < KernelSU-Next-Implement-SUSFS-v1.5.5-Universal.patch || true
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-          cp ../../kernel_patches/69_hide_stuff.patch ./
-          patch -p1 -F 3 < 69_hide_stuff.patch
-
+         
       - name: Apply SUSFS Patches MKSU
         if: ${{ (inputs.kernelsu_variant == 'MKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
