@@ -157,6 +157,7 @@ jobs:
           patch -p1 < mksu_susfs.patch
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
+          
       - name: Apply SUSFS Patches KernelSU-Next
         if: ${{ (github.event.inputs.kernelsu_variant == 'Next') && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
@@ -227,6 +228,7 @@ jobs:
          rm -rf ./AnyKernel3/.git
          cp kernel_workspace/kernel_platform/out/msm-kernel-${{ github.event.inputs.CPUD }}-gki/dist/Image ./AnyKernel3/
          cp kernel_workspace/kernel_platform/out/msm-kernel-${{ github.event.inputs.CPUD }}-gki/dist/Image ./kernel_workspace/kernel
+         
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
