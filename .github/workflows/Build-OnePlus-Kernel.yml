@@ -41,9 +41,10 @@ on:
         required: true
         type: choice
         options:
+          - without ksu
           - tag (稳定)
           - main (ci)
-        default: tag
+        default: main
       SUSFS_ENABLED:
         description: "添加 SUSFS"
         required: true
