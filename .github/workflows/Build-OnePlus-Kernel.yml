@@ -36,6 +36,14 @@ on:
           - Next
           - MKSU
         default: Kernel
+      kernelsu_version:
+        description: "选择 KSU 版本"
+        required: true
+        type: choice
+        options:
+          - tag (稳定)
+          - main (ci)
+        default: tag
       SUSFS_ENABLED:
         description: "添加 SUSFS"
         required: true
