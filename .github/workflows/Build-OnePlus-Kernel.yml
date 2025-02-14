@@ -247,11 +247,13 @@ jobs:
   
       - name: Build kernel
         id: build_kernel
-        continue-on-error: true
         run: |
          cd kernel_workspace
-         ./kernel_platform/build_with_bazel.py -t ${{ github.event.inputs.CPUD }} gki || true
-
+          if ! ./kernel_platform/build_with_bazel.py -t ${{ github.event.inputs.CPUD }} gki || true
+            echo "::set-output name=status::failure"  
+            exit 1  
+          fi
+          
       - name: Fallback build kernel
         if: steps.build_kernel.outcome == 'failure'
         run: |
