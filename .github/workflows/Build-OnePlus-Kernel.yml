@@ -227,6 +227,7 @@ jobs:
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           cd ./KernelSU
           cp ../../KernelSU/kernel -r ./
+          sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${{ env.KSUVER }}/" kernel/Makefile
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
 
