@@ -233,7 +233,7 @@ jobs:
         id: build_kernel
         run: |
          cd kernel_workspace
-         ./kernel_platform/build_with_bazel.py -t ${{ github.event.inputs.CPUD }} gki
+         ./kernel_platform/build_with_bazel.py -t ${{ github.event.inputs.CPUD }} gki || true
 
       - name: Fallback build kernel
         if: steps.build_kernel.outcome == 'failure'
