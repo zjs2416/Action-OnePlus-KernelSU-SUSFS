@@ -219,6 +219,7 @@ jobs:
         run: |
           cd kernel_workspace
           git clone -b susfs-v1.5.5 https://github.com/rsuntk/KernelSU.git
+          git clone https://github.com/TheWildJames/kernel_patches.git
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
           cd kernel_platform
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
@@ -231,7 +232,7 @@ jobs:
 
 
       - name: Apply Hide Stuff Patches
-        if: ${{ (github.event.inputs.SUSFS_ENABLED == 'true') && inputs.kernelsu_variant != 'RKSU' }}
+        if: ${{ github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           echo "Changing to configuration directory: $CONFIG..."
           cd kernel_workspace/kernel_platform/common
