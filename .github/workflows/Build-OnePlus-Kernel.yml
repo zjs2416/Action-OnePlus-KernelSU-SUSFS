@@ -218,7 +218,7 @@ jobs:
         if: ${{ (inputs.kernelsu_variant == 'RKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace
-          git clone -b susfs-v1.5.5 https://github.com/rsuntk/KernelSU.git
+          git clone -b susfs-v1.5.5-new https://github.com/rsuntk/KernelSU.git
           git clone https://github.com/TheWildJames/kernel_patches.git
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
           cd kernel_platform
@@ -230,7 +230,6 @@ jobs:
           sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${{ env.KSUVER }}/" kernel/Makefile
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-
 
       - name: Apply Hide Stuff Patches
         if: ${{ github.event.inputs.SUSFS_ENABLED == 'true' }}
