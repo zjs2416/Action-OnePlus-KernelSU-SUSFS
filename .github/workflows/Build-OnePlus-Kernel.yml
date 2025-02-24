@@ -26,6 +26,10 @@ on:
         description: "自定义内核后名称"
         required: false
         default: ''
+      KERNEL_VER:
+        description: "自定义版本"
+        required: true
+        default: 'default'
       kernelsu_variant:
         description: "选择 KSU"
         required: true
