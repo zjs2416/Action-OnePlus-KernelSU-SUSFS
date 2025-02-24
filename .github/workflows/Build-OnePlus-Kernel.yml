@@ -118,7 +118,7 @@ jobs:
          if "${{ github.event.inputs.kernelsu_version }}" == "KSUN"
         run: |
              cd kernel_workspace/kernel_platform
-             curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash ${{ env.BRANCH }}
+             curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash ${{ env.BRANCH }}
       - name: Add Magic Mount KernelSU
          if "${{ github.event.inputs.kernelsu_version }}" == "MKSU"
         run: |
