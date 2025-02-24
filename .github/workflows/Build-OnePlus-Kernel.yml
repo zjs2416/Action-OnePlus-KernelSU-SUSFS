@@ -23,9 +23,9 @@ on:
         required: true
         default: '6.1'
       KERNEL_NAME:
-        description: "自定义内核后名称"
-        required: false
-        default: ''
+        description: "自定义内核名称"
+        required: true
+        default: '-android14-11-o-'
       KERNEL_VER:
         description: "自定义版本"
         required: true
@@ -36,6 +36,7 @@ on:
         type: choice
         options:
           - KSU
+          - KSUN
           - MKSU
           - RKSU
           - MKSU-SKN
@@ -93,135 +94,95 @@ jobs:
          rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
          sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
          sed -i 's/ -dirty//g' kernel_platform/msm-kernel/scripts/setlocalversion
+         sed -i '$s|echo "\$res"|echo "$res-KFzZ"|' kernel_platform/common/scripts/setlocalversion            
+         sed -i '$s|echo "\$res"|echo "$res-KFzZ"|' kernel_platform/msm-kernel/scripts/setlocalversion
 
-      - name: KernelSU & MKSU version
-        if: ${{ github.event.inputs.kernelsu_variant == 'KSU' || github.event.inputs.kernelsu_variant == 'MKSU'}}
+      - name: KSU & KSUN & MKSU & RKSU & MKSU-SKN Version
         run: |
           if [[ "${{ github.event.inputs.kernelsu_version }}" == "tag[Releases]" ]]; then
-            echo "BRANCH=-" >> $GITHUB_ENV
-          elif [[ "${{ github.event.inputs.kernelsu_version }}" == "main[Ci]" ]]; then
-            echo "BRANCH=-s main" >> $GITHUB_ENV
+              echo "BRANCH=-" >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.kernelsu_version }}" == "main" && ( "${{ github.event.inputs.kernelsu_variant }}" == "KSU" || "${{ github.event.inputs.kernelsu_variant }}" == "MKSU" || "${{ github.event.inputs.kernelsu_variant }}" == "RKSU" ) ]]; then
+              echo "BRANCH=-s main" >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.kernelsu_version }}" == "main" && "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
+              echo "BRANCH=-s next" >> $GITHUB_ENV
+           elif [[ "${{ github.event.inputs.kernelsu_version }}" == "main" && "${{ github.event.inputs.kernelsu_variant }}" == "MKSU-SKN" ]]; then
+              echo "BRANCH=-s susfs" >> $GITHUB_ENV
           fi
 
       - name: Add KernelSU
-        if: ${{ github.event.inputs.kernelsu_variant == 'KSU' }}
+         if "${{ github.event.inputs.kernelsu_version }}" == "KSU"
+        run: | 
+           cd kernel_workspace/kernel_platform 
+           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash ${{ env.BRANCH }}
+      - name: Add KernelSU-Next
+         if "${{ github.event.inputs.kernelsu_version }}" == "KSUN"
         run: |
-          cd kernel_workspace/kernel_platform
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash ${{ env.BRANCH }}
-          cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
-          echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
-          sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
-          
+             cd kernel_workspace/kernel_platform
+             curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash ${{ env.BRANCH }}
       - name: Add Magic Mount KernelSU
-        if: ${{ github.event.inputs.kernelsu_variant == 'MKSU' }}
+         if "${{ github.event.inputs.kernelsu_version }}" == "MKSU"
         run: |
-          cd kernel_workspace/kernel_platform
-          curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash ${{ env.BRANCH }}
-          cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
-          echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
-          sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
-          
+             cd kernel_workspace/kernel_platform
+             curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/main/kernel/setup.sh" | bash ${{ env.BRANCH }}
       - name: Add Rissu KernelSU
-        if: ${{ github.event.inputs.kernelsu_variant == 'RKSU' }}
+         if "${{ github.event.inputs.kernelsu_version }}" == "RKSU"
         run: |
-          cd kernel_workspace/kernel_platform
-          curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s susfs
-          cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
-          echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
-
+            cd kernel_workspace/kernel_platform
+            curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash ${{ env.BRANCH }}
       - name: Add Magic Mount KernelSU-SKN
-        if: ${{ github.event.inputs.kernelsu_variant == 'MKSU-SKN' }}
+         if "${{ github.event.inputs.kernelsu_version }}" == "RKSU"
         run: |
-          cd kernel_workspace/kernel_platform
-          curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/susfs/kernel/setup.sh" | bash ${{ env.BRANCH }}
-          cd ./KernelSU
-          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
-          echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
+            cd kernel_workspace/kernel_platform
+            curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/susfs/kernel/setup.sh" | bash ${{ env.BRANCH }}
           
-      - name: Apply SUSFS Patches KernelSU
-        if: ${{ (github.event.inputs.kernelsu_variant == 'KSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
+      - name: Add SUSFS Patches 
+        if: ${{ github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
           git clone https://github.com/TheWildJames/kernel_patches.git
           cd kernel_platform
-          # Copy SUSFS patches
-          cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          cd ./KernelSU
-          patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
-          cp ../../kernel_patches/mksu_susfs.patch ../KernelSU/
-          patch -p1 < mksu_susfs.patch || true
-          cd ../common
-          patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-         
-      - name: Apply SUSFS Patches MKSU
-        if: ${{ (inputs.kernelsu_variant == 'MKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
-        run: |
-          cd kernel_workspace
-          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
-          git clone https://github.com/TheWildJames/kernel_patches.git
-          cd kernel_platform
-
-          # Copy SUSFS patches
-          cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-          cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          cd ./KernelSU
-          patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
-          cp ../../kernel_patches/mksu_susfs.patch ../KernelSU/
-          patch -p1 < mksu_susfs.patch || true
-          cp ../../kernel_patches/fix.patch ../KernelSU/
-          patch -p1 < fix.patch || true
-          cd ../common
-          patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-
-      - name: Apply SUSFS Patches RKSU
-        if: ${{ (inputs.kernelsu_variant == 'RKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
-        run: |
-          cd kernel_workspace
-          git clone -b susfs-v1.5.5 https://github.com/rsuntk/KernelSU.git
-          git clone https://github.com/TheWildJames/kernel_patches.git
-          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
-          cd kernel_platform
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-          cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          cd ./KernelSU
-          cp ../../KernelSU/kernel -r ./
-          sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${{ env.KSUVER }}/" kernel/Makefile
-          cd ../common
-          patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-
-      - name: Apply SUSFS Patches MKSU-SKN
-        if: ${{ (inputs.kernelsu_variant == 'MKSU-SKN') && github.event.inputs.SUSFS_ENABLED == 'true' }}
-        run: |
-          cd kernel_workspace
-          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
-          git clone https://github.com/TheWildJames/kernel_patches.git
-          cd kernel_platform
-
-          # Copy SUSFS patches
-          cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
-          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
-          cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-          cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          cd ./KernelSU
-          patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
-          cd ../common
-          patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-          cd ../KernelSU
-          patch -p1 < mksu_susfs_fix.patch || true
-          patch -p1 < nongki_fix.patch || true 
-          chmod 777 fix_nongki.sh
+          if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSU" ]]; then
+            cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
+            cd ./KernelSU
+            patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
+            cp ../../kernel_patches/mksu_susfs.patch ../KernelSU/
+            patch -p1 < mksu_susfs.patch || true
+          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
+            cd ..
+            git clone -b next-susfs https://github.com/KernelSU-Next/KernelSU-Next.git
+            cd ./kernel_platform/KernelSU-Next
+            cp ../../KernelSU-Next/kernel -r ./
+            #cp ../../kernel_patches/KernelSU-Next-Implement-SUSFS-v1.5.5-Universal.patch ./
+            #patch -p1 --forward < KernelSU-Next-Implement-SUSFS-v1.5.5-Universal.patch || true
+          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "MKSU" ]]; then
+            cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
+            cd ./KernelSU
+            patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
+            cp ../../kernel_patches/mksu_susfs.patch ../KernelSU/
+            patch -p1 < mksu_susfs.patch
+            cp ../../kernel_patches/fix.patch ./KernelSU/
+            patch -p1 < fix.patch
+          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "RKSU" ]]; then
+            cd ..
+            git clone -b susfs-v1.5.5 https://github.com/rsuntk/KernelSU.git
+            cd ./kernel_platform/KernelSU
+            cp ../../KernelSU/kernel -r ./
+          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "MKSU-SKN" ]]; then
+            cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
+            cd ./KernelSU
+            patch -p1 --forward < 10_enable_susfs_for_ksu.patch || true
+            cd ../KernelSU
+            patch -p1 < mksu_susfs_fix.patch || true
+            patch -p1 < nongki_fix.patch || true 
+            chmod 777 fix_nongki.sh
           ./fix_nongki.sh
-
+          fi
+          cd ../common
+          patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
 
       - name: Apply Hide Stuff Patches
         if: ${{ github.event.inputs.SUSFS_ENABLED == 'true' }}
@@ -229,6 +190,32 @@ jobs:
           cd kernel_workspace/kernel_platform/common
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
+
+      - name: KernelSUver
+        if: ${{ github.event.inputs.KERNEL_VER == 'default' }}
+        run: |
+          if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
+            cd kernel_workspace/kernel_platform/KernelSU-Next 
+            KSU_VERSION=$(( $(/usr/bin/git rev-list --count HEAD) + 10200 ))
+            echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
+            sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
+          else
+            cd kernel_workspace/kernel_platform/KernelSU
+            KSU_VERSION=$(( $(/usr/bin/git rev-list --count HEAD) + 10200 ))
+            echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
+            sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
+          fi
+
+      - name: Cust KernelSUver
+        if: ${{ github.event.inputs.KERNEL_VER != 'default' }}
+        run: |
+          if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
+            cd kernel_workspace/kernel_platform/KernelSU-Next 
+            sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${{ github.event.inputs.KERNEL_VER }}/" kernel/Makefile
+          else
+            cd kernel_workspace/kernel_platform/KernelSU
+            sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${{ github.event.inputs.KERNEL_VER }}/" kernel/Makefile
+          fi
 
       - name: Add make name
         run: |
@@ -258,11 +245,11 @@ jobs:
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
-         name: AnyKernel3-KernelSU-SUSFS_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}
+         name: AnyKernel3-KernelSU_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}
          path: ./AnyKernel3/*
 
       - name: Upload Image
         uses: actions/upload-artifact@v4
         with:
-         name: Image-KernelSU-SUSFS_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}
+         name: Image-KernelSU_${{ env.KSUVER }}_${{ github.event.inputs.FEIL }}
          path: kernel_workspace/kernel
