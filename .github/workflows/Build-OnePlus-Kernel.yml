@@ -142,7 +142,7 @@ jobs:
           curl -LSs "https://raw.githubusercontent.com/ShirkNeko/KernelSU/susfs/kernel/setup.sh" | bash ${{ env.BRANCH }}
           
       - name: Apply SUSFS Patches KernelSU
-        if: ${{ (github.event.inputs.kernelsu_variant == 'Official') && github.event.inputs.SUSFS_ENABLED == 'true' }}
+        if: ${{ (github.event.inputs.kernelsu_variant == 'KSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
@@ -194,7 +194,7 @@ jobs:
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
 
       - name: Apply SUSFS Patches Rissu KernelSU
-        if: ${{ (github.inputs.kernelsu_variant == 'RKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
+        if: ${{ (github.event.inputs.kernelsu_variant == 'RKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace
           git clone -b susfs-v1.5.5 https://github.com/rsuntk/KernelSU.git
@@ -210,7 +210,7 @@ jobs:
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
 
       - name: Apply SUSFS Patches MKSU-SKN
-        if: ${{ (github.inputs.kernelsu_variant == 'MKSU-SKN') && github.event.inputs.SUSFS_ENABLED == 'true' }}
+        if: ${{ (github.event.inputs.kernelsu_variant == 'MKSU-SKN') && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace
           git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
