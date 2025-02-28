@@ -230,12 +230,15 @@ jobs:
           ./fix_nongki.sh
 
       - name: Apply Hide Stuff Patches
+        if: ${{ github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform/common
-          if [[ "${{ github.event.inputs.inputs.SUSFS_ENABLED }}" == "true" ]]; then
           cp ../../kernel_patches/new_hooks.patch ./
           patch -p1 -F 3 < new_hooks.patch
-          fi
+
+      - name: Apply Hide Stuff Patches
+        run: |
+          cd kernel_workspace/kernel_platform/common
           cp ../../kernel_patches/69_hide_stuff.patch ./
           patch -p1 -F 3 < 69_hide_stuff.patch
 
