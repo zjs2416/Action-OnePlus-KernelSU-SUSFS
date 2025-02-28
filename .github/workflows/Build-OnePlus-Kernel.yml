@@ -230,7 +230,7 @@ jobs:
           chmod 777 fix_nongki.sh
           ./fix_nongki.sh
 
-      - name: Apply Hide Stuff Patches
+      - name: Apply New Hook Patches
         if: ${{ github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform/common
