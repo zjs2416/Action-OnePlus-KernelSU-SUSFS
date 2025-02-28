@@ -108,6 +108,7 @@ jobs:
             echo "BRANCH=-s next" >> $GITHUB_ENV
          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "MKSU-SKN" ]]; then
             echo "BRANCH=-s susfs" >> $GITHUB_ENV
+          fi
          fi
 
       - name: Add KernelSU
