@@ -9,7 +9,7 @@ on:
       FEIL:
         description: "配置文件"
         required: true
-        default: 'ooneplus_ace_3v_v'
+        default: 'oneplus_ace_3v_v'
       CPUD:
         description: "处理器代号"
         required: true
@@ -25,7 +25,7 @@ on:
       KERNEL_NAME:
         description: "自定义内核名称"
         required: true
-        default: '-ios-8'
+        default: '-ios-8-我是我自己的狗'
       KERNEL_VER:
         description: "自定义版本"
         required: true
@@ -94,8 +94,8 @@ jobs:
          rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
          sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
          sed -i 's/ -dirty//g' kernel_platform/msm-kernel/scripts/setlocalversion
-         sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/common/scripts/setlocalversion            
-         sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/msm-kernel/scripts/setlocalversion
+#        sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/common/scripts/setlocalversion            
+#        sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/msm-kernel/scripts/setlocalversion
 
       - name: KSU & KSUN & MKSU & RKSU & MKSU-SKN Version
         run: |
