@@ -94,8 +94,8 @@ jobs:
          rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
          sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
          sed -i 's/ -dirty//g' kernel_platform/msm-kernel/scripts/setlocalversion
-         sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/common/scripts/setlocalversion            
-         sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/msm-kernel/scripts/setlocalversion
+#        sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/common/scripts/setlocalversion            
+#        sed -i '$s|echo "\$res"|echo "$res-我是我自己的狗"|' kernel_platform/msm-kernel/scripts/setlocalversion
 
       - name: KSU & KSUN & MKSU & RKSU & MKSU-SKN Version
         run: |
