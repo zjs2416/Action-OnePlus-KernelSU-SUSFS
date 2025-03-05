@@ -107,7 +107,7 @@ jobs:
          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
             echo "BRANCH=-s next" >> $GITHUB_ENV
          elif [[ "${{ github.event.inputs.kernelsu_variant }}" == "MKSU-SKN" ]]; then
-            echo "BRANCH=-s susfs" >> $GITHUB_ENV
+            echo "BRANCH=-s susfs_patch" >> $GITHUB_ENV
           fi
          fi
 
@@ -221,12 +221,6 @@ jobs:
           cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
           cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-          cd ./KernelSU
-          cp ./patch/* ./
-          patch --fuzz=3 -p1 < MKSU-SKN_susfs.patch || true
-          patch --fuzz=3 -p1 < nongki_fix.patch || true
-          chmod 777 nongki_fix.sh
-          ./nongki_fix.sh
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
           
