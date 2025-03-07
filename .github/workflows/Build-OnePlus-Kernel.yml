@@ -273,7 +273,7 @@ jobs:
           echo "CONFIG_KSU=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
           
           # Add SUSFS configuration settings
-          if [ "${{ github.event.inputs.SUSFS_Enabled }}" = "true" ]; then
+          if [ "${{ github.event.inputs.SUSFS_ENABLED }}" = "true" ]; then
             echo "CONFIG_KSU_SUSFS=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
