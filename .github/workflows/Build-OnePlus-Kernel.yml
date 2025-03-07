@@ -271,18 +271,9 @@ jobs:
         run: |
           # Add KSU configuration settings
           echo "CONFIG_KSU=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-
-          # Add VFS configuration settings
-          if [ "${{ github.event.inputs['VFS_patch Enabled'] }}" = "true" ]; then
-            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-            echo "CONFIG_KSU_HOOK=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-            echo "CONFIG_KSU_WITH_KPROBES=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          else
-            echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          fi
           
           # Add SUSFS configuration settings
-          if [ "${{ github.event.inputs['SUSFS Enabled'] }}" = "true" ]; then
+          if [ "${{ github.event.inputs.SUSFS_Enabled }}" = "true" ]; then
             echo "CONFIG_KSU_SUSFS=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
@@ -299,6 +290,15 @@ jobs:
             echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
            fi
+
+          # Add VFS configuration settings
+          if [ "${{ github.event.inputs.VFS_patch_Enabled }}" = "true" ]; then
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_HOOK=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_WITH_KPROBES=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+          else
+            echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+          fi
 
           # Remove check_defconfig
           sed -i 's/check_defconfig//' kernel_workspace/kernel_platform/common/build.config.gki
