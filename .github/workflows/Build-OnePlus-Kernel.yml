@@ -26,10 +26,10 @@ on:
         description: "自定义内核名称"
         required: true
         default: '-android14-11-o-g54d4b575ebf6'
-      KERNEL_VER:
-        description: "自定义版本"
-        required: true
-        default: 'default'
+#     KERNEL_VER:
+#       description: "自定义版本"
+#       required: true
+#       default: 'default'
       kernelsu_variant:
         description: "选择 KSU"
         required: true
@@ -177,8 +177,6 @@ jobs:
           patch -p1 --forward < 0001-kernel-patch-susfs-v1.5.5-to-KernelSU-Next-v1.0.5.patch || true
           cd ../common
           patch -p1 < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
-          cp ../../kernel_patches/hooks/new_hooks.patch ./
-          patch -p1 -F 3 < new_hooks.patch
 
       - name: Apply SUSFS Patches Magic Mount KernelSU
         if: ${{ (github.event.inputs.kernelsu_variant == 'MKSU') && github.event.inputs.SUSFS_ENABLED == 'true' }}
@@ -237,7 +235,7 @@ jobs:
           patch -p1 -F 3 < 69_hide_stuff.patch
 
       - name: KernelSUver
-        if: github.event.inputs.KERNEL_VER == 'default'
+#       if: github.event.inputs.KERNEL_VER == 'default'
         run: |
           if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
             cd kernel_workspace/kernel_platform/KernelSU-Next 
@@ -251,16 +249,17 @@ jobs:
             sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
           fi
 
-      - name: Cust KernelSUver
-        if: github.event.inputs.KERNEL_VER != 'default'
-        run: |
-          if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
-            cd kernel_workspace/kernel_platform/KernelSU-Next 
-            sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${{ github.event.inputs.KERNEL_VER }}/" kernel/Makefile
-          else
-            cd kernel_workspace/kernel_platform/KernelSU
-            sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${{ github.event.inputs.KERNEL_VER }}/" kernel/Makefile
-          fi
+#     - name: Cust KernelSUver
+#       if: github.event.inputs.KERNEL_VER != 'default'
+#       run: |
+#         if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
+#           cd kernel_workspace/kernel_platform/KernelSU-Next 
+#           sed -i "s/DKSU_VERSION=11998/DKSU_VERSION=${{ github.event.inputs.KERNEL_VER }}/" kernel/Makefile
+#         else
+#           cd kernel_workspace/kernel_platform/KernelSU
+#           sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${{ github.event.inputs.KERNEL_VER }}/" kernel/Makefile
+#         fi
+
       - name: Apply New Hooks Patches
         if: ${{ github.event.inputs.VFS_patch_ENABLED == 'true' }}
         run: |
@@ -274,7 +273,7 @@ jobs:
           echo "CONFIG_KSU=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
 
           # Add VFS configuration settings
-          if [[ "${github_event_inputs_VFS_patch_ENABLED}" == 'true' ]]; then
+          if [ "${{ github.event.inputs['VFS_patch Enabled'] }}" = "true" ]; then
             echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_HOOK=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_WITH_KPROBES=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
@@ -283,21 +282,23 @@ jobs:
           fi
           
           # Add SUSFS configuration settings
-          echo "CONFIG_KSU_SUSFS=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_KSTAT=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
-          echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+          if [ "${{ github.event.inputs['SUSFS Enabled'] }}" = "true" ]; then
+            echo "CONFIG_KSU_SUSFS=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_SUS_KSTAT=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+            echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> kernel_workspace/kernel_platform/common/arch/arm64/configs/gki_defconfig
+           fi
 
           # Remove check_defconfig
           sed -i 's/check_defconfig//' kernel_workspace/kernel_platform/common/build.config.gki
