@@ -272,13 +272,13 @@ jobs:
             cd kernel_workspace/kernel_platform
             echo "CONFIG_KSU=y" >> ./common/arch/arm64/configs/gki_defconfig
 
-      - name: Set CONFIG_KSU_SUSFS_SUS_SU to y
+      - name: Set CONFIG_SUSFS To y
         if: ${{ github.event.inputs.VFS_patch_ENABLED != 'true' && github.event.inputs.SUSFS_ENABLED == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform
             echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> ./common/arch/arm64/configs/gki_defconfig
 
-      - name: Set CONFIG_KSU_SUSFS_SUS_SU To n
+      - name: Set CONFIG_SUSFS To n
         if: ${{ github.event.inputs.VFS_patch_ENABLED == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform
