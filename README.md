@@ -12,7 +12,7 @@
 
 - **Rissu KernelSU**: 由[rsuntk](https://github.com/rsuntk)开发
 
-- **Magic Mount KernelSU-SKN**: 由[ShirkNeko](https://github.com/ShirkNeko/)开发
+- **SukiKSU(MKSU-SKN)**: 由[ShirkNeko](https://github.com/ShirkNeko/)开发
 
 - **SUSFS**: 由[simonpunk](https://gitlab.com/simonpunk/susfs4ksu.git)开发
   
