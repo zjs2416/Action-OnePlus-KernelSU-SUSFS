@@ -255,6 +255,7 @@ jobs:
             KSU_VERSION=$(( $(/usr/bin/git rev-list --count HEAD) + 10200 ))
             echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
             sed -i "s/DKSU_VERSION=16/DKSU_VERSION=${KSU_VERSION}/" kernel/Makefile
+           fi
           fi
 
 #     - name: Cust KernelSUver
