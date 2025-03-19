@@ -26,10 +26,10 @@ on:
         description: "自定义内核名称"
         required: true
         default: '-android14-11-o-g54d4b575ebf6'
-#     KERNEL_VER:
-#       description: "自定义版本"
-#       required: true
-#       default: 'default'
+      KERNEL_VER:
+        description: "自定义版本"
+        required: true
+        default: 'default'
       kernelsu_variant:
         description: "选择 KSU"
         required: true
@@ -41,10 +41,6 @@ on:
           - RKSU
           - SKSU
         default: KSU
-      KERNEL_VER:
-        description: "自定义版本"
-        required: true
-        default: 'default'
       kernelsu_version:
         description: "选择 KSU 版本"
         required: true
