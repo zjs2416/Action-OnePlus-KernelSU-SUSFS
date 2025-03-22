@@ -195,6 +195,8 @@ jobs:
           echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./common/arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./common/arch/arm64/configs/gki_defconfig
           
+          sed -i 's/check_defconfig//' ./common/build.config.gki
+          
       - name: Handle KernelSU Version
         run: |
          if [[ "${{ github.event.inputs.kernelsu_variant }}" == "KSUN" ]]; then
