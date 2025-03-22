@@ -71,8 +71,8 @@ jobs:
 
       - name: Configure Git
         run: |
-         git config --global user.name "KFzZ"
-         git config --global user.email "KFzZ0708@gmail.com"
+         git config --global user.name "DogEZ"
+         git config --global user.email "DdogezD@gmail.com"
 
       - name: Install dependencies
         run: |
@@ -94,8 +94,6 @@ jobs:
          rm kernel_platform/msm-kernel/android/abi_gki_protected_exports_* || echo "No protected exports!"
          sed -i 's/ -dirty//g' kernel_platform/common/scripts/setlocalversion
          sed -i 's/ -dirty//g' kernel_platform/msm-kernel/scripts/setlocalversion
-#        sed -i '$s|echo "\$res"|echo "$res-KFzZ"|' kernel_platform/common/scripts/setlocalversion            
-#        sed -i '$s|echo "\$res"|echo "$res-KFzZ"|' kernel_platform/msm-kernel/scripts/setlocalversion
 
       - name: KSU & MKSU & RKSU Version
         run: |
